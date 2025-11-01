@@ -27,6 +27,10 @@ name = "kodios"
 test = true
 bench = false
 
+[[test]]
+name = "should_panic"
+harness = false
+
 [profile.dev]
 # panic = "abort"
 
