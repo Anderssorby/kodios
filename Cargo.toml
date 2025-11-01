@@ -1,0 +1,26 @@
+[package]
+name = "kodios"
+version = "0.1.0"
+edition = "2024"
+authors = [ "Anders C. Sørby <anders@sorby.xyz>" ]
+
+[dependencies]
+# bootloader = "0.11.12"
+bootloader = "0.9"
+
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+riscv64 = "0.0.0"
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86_64 = "0.15.2"
+
+[[bin]]
+name = "kodios"
+test = false
+bench = false
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
