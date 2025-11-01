@@ -7,6 +7,14 @@ authors = [ "Anders C. Sørby <anders@sorby.xyz>" ]
 [dependencies]
 # bootloader = "0.11.12"
 bootloader = "0.9"
+spin = "0.10.0"
+volatile = "0.2.6"
+uart_16550 = "0.2.0"
+
+
+[dependencies.lazy_static]
+version = "1.0"
+features = ["spin_no_std"]
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
 riscv64 = "0.0.0"
@@ -16,11 +24,18 @@ x86_64 = "0.15.2"
 
 [[bin]]
 name = "kodios"
-test = false
+test = true
 bench = false
 
 [profile.dev]
-panic = "abort"
+# panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[package.metadata.bootimage]
+test-args = [
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"
+]
+test-success-exit-code = 33
+test-timeout = 300          # (in seconds)

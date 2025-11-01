@@ -1,0 +1,17 @@
+                                                 dddddddd                                              
+KKKKKKKKK    KKKKKKK                             d::::::d  iiii       OOOOOOOOO        SSSSSSSSSSSSSSS 
+K:::::::K    K:::::K                             d::::::d i::::i    OO:::::::::OO    SS:::::::::::::::S
+K:::::::K    K:::::K                             d::::::d  iiii   OO:::::::::::::OO S:::::SSSSSS::::::S
+K:::::::K   K::::::K                             d:::::d         O:::::::OOO:::::::OS:::::S     SSSSSSS
+KK::::::K  K:::::KKK   ooooooooooo       ddddddddd:::::d iiiiiii O::::::O   O::::::OS:::::S            
+  K:::::K K:::::K    oo:::::::::::oo   dd::::::::::::::d i:::::i O:::::O     O:::::OS:::::S            
+  K::::::K:::::K    o:::::::::::::::o d::::::::::::::::d  i::::i O:::::O     O:::::O S::::SSSS         
+  K:::::::::::K     o:::::ooooo:::::od:::::::ddddd:::::d  i::::i O:::::O     O:::::O  SS::::::SSSSS    
+  K:::::::::::K     o::::o     o::::od::::::d    d:::::d  i::::i O:::::O     O:::::O    SSS::::::::SS  
+  K::::::K:::::K    o::::o     o::::od:::::d     d:::::d  i::::i O:::::O     O:::::O       SSSSSS::::S 
+  K:::::K K:::::K   o::::o     o::::od:::::d     d:::::d  i::::i O:::::O     O:::::O            S:::::S
+KK::::::K  K:::::KKKo::::o     o::::od:::::d     d:::::d  i::::i O::::::O   O::::::O            S:::::S
+K:::::::K   K::::::Ko:::::ooooo:::::od::::::ddddd::::::ddi::::::iO:::::::OOO:::::::OSSSSSSS     S:::::S
+K:::::::K    K:::::Ko:::::::::::::::o d:::::::::::::::::di::::::i OO:::::::::::::OO S::::::SSSSSS:::::S
+K:::::::K    K:::::K oo:::::::::::oo   d:::::::::ddd::::di::::::i   OO:::::::::OO   S:::::::::::::::SS 
+KKKKKKKKK    KKKKKKK   ooooooooooo      ddddddddd   dddddiiiiiiii     OOOOOOOOO      SSSSSSSSSSSSSSS   

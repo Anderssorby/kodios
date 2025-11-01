@@ -1,35 +1,100 @@
 #![no_std]
 #![no_main]
+#![reexport_test_harness_main = "test_main"]
+#![feature(custom_test_frameworks)]
+#![test_runner(test_runner)]
 
+mod serial;
+
+mod vga_buffer;
+use vga_buffer::{WRITER,ColorCode, Color};
 use core::panic::PanicInfo;
+use core::prelude::rust_2024::derive;
+use core::fmt::Debug;
+use core::clone::Clone;
+use core::marker::Copy;
+use core::cmp::PartialEq;
+use core::cmp::Eq;
 
-/// This function is called on panic.
+static LOGO: &str = include_str!("logo.txt");
+
+pub fn print_logo() {
+    use core::fmt::Write;
+    let mut writer = WRITER.lock();
+    let old_color = writer.color_code;
+    writer.color_code = ColorCode::new(Color::Green, Color::Black);
+    writer.write_str(LOGO).unwrap();
+    writer.color_code = old_color;
+}
+
+#[cfg(not(test))]
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
     loop {}
 }
 
-static HELLO: &[u8] = b"Hello Kodio!";
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    serial_println!("[failed]");
+    serial_println!("Error: {}", info);
+    exit_qemu(QemuExitCode::Failed);
+    loop {}
+}
+
+#[test_case]
+fn trivial_assertion() {
+    assert_eq!(1, 1);
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl<T> Testable for T
+where
+    T: Fn(),
+{
+    fn run(&self) {
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self();
+        serial_println!("[ok]");
+    }
+}
+
+pub fn test_runner(tests: &[&dyn Testable]) {
+    serial_println!("Running {} tests", tests.len());
+    for test in tests {
+        test.run();
+    }
+    exit_qemu(QemuExitCode::Success);
+}
+
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
-    let vga_buffer = 0xb8000 as *mut u8;
+    print_logo();
 
-    for (i, &byte) in HELLO.iter().enumerate() {
-        unsafe {
-            *vga_buffer.offset(i as isize * 2) = byte;
-            *vga_buffer.offset(i as isize * 2 + 1) = 0xb;
-        }
-    }
+    #[cfg(test)]
+    test_main();
 
     loop {}
 }
 
-pub unsafe fn exit_qemu() {
-    use x86_64::instructions::port::Port;
-
-    let mut port = Port::<u32>::new(0xf4);
-    unsafe {
-        port.write(54); // exit code is (54 << 1) | 1 = 109
-    }
-}
