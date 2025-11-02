@@ -6,6 +6,7 @@
 
 
 use core::panic::PanicInfo;
+use kodios::hlt_loop;
 #[cfg(not(test))]
 use kodios::println;
 
@@ -19,7 +20,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    hlt_loop();
 }
 
 #[unsafe(no_mangle)]
@@ -29,6 +30,6 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 

@@ -24,8 +24,17 @@ pub fn init() {
     serial_println!("Initializing...");
     gdt::init();
     interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
     print_logo();
     serial_println!("Initialization complete.");
+}
+
+#[cfg(target_arch = "x86_64")]
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
 }
 pub trait Testable {
     fn run(&self) -> ();
@@ -54,7 +63,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failed);
-    loop {}
+    hlt_loop();
 }
 
 /// Entry point for `cargo test`
@@ -63,7 +72,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     init();
     test_main();
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(test)]
@@ -76,11 +85,15 @@ static LOGO: &str = include_str!("logo.txt");
 
 pub fn print_logo() {
     use core::fmt::Write;
-    let mut writer = WRITER.lock();
-    let old_color = writer.color_code;
-    writer.color_code = ColorCode::new(Color::Green, Color::Black);
-    writer.write_str(LOGO).unwrap();
-    writer.color_code = old_color;
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        let mut writer = WRITER.lock();
+        let old_color = writer.color_code;
+        writer.color_code = ColorCode::new(Color::Green, Color::Black);
+        writer.write_str(LOGO).expect("Failed to write logo");
+        writer.color_code = old_color;
+    });
     serial_println!("{}", LOGO);
 }
 

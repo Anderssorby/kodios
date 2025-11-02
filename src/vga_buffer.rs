@@ -1,13 +1,12 @@
-use core::prelude::rust_2024::derive;
-use core::fmt::{self, Debug, Write};
 use core::clone::Clone;
-use core::marker::Copy;
-use core::cmp::PartialEq;
 use core::cmp::Eq;
-use volatile::Volatile;
+use core::cmp::PartialEq;
+use core::fmt::{self, Debug, Write};
+use core::marker::Copy;
+use core::prelude::rust_2024::derive;
 use lazy_static::lazy_static;
 use spin::Mutex;
-
+use volatile::Volatile;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -113,7 +112,6 @@ impl Writer {
                 // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
-
         }
     }
 }
@@ -146,7 +144,11 @@ macro_rules! println {
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
-    WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 
 #[test_case]
@@ -163,10 +165,15 @@ fn test_println_many() {
 
 #[test_case]
 fn test_println_output() {
+    use x86_64::instructions::interrupts;
+
     let s = "Some test string that fits on a single line";
-    println!("{}", s);
-    for (i, c) in s.chars().enumerate() {
-        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
-        assert_eq!(char::from(screen_char.ascii_character), c);
-    }
+    interrupts::without_interrupts(|| {
+        let mut writer = WRITER.lock();
+        writeln!(writer, "\n{}", s).expect("writeln failed");
+        for (i, c) in s.chars().enumerate() {
+            let screen_char = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
+            assert_eq!(char::from(screen_char.ascii_character), c);
+        }
+    });
 }
