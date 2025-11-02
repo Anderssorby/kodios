@@ -39,7 +39,11 @@
           # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
           packages.default = pkgs.hello;
           devShells.default = pkgs.mkShell {
-            nativeBuildInputs = [ pkgs.rustup ];
+            nativeBuildInputs = with pkgs; [ 
+              rustup
+              cargo-bootimage
+              qemu
+            ];
           };
         };
       flake = {

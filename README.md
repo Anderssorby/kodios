@@ -4,6 +4,19 @@ A fun little OS written in Rust.
 
 ## Building
 
+QEMU is used for testing the kernel.
+
+### With Nix
+
+Nix can install all necessary dependencies easily. Install nix, activate flakes and run:
+
+```
+nix develop
+cargo bootimage
+```
+
+### Without nix
+
 Install bootimage
 ```
 cargo install bootimage
@@ -15,6 +28,15 @@ cargo bootimage
 ```
 
 ## Running
+
+### Simple
+
+Run default:
+
+```
+cargo run
+```
+
 
 Using QEMU for x86_64 arch.
 
