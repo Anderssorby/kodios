@@ -57,9 +57,9 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(
     use x86_64::instructions::port::Port;
 
     lazy_static! {
-        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
+        static ref KEYBOARD: Mutex<Keyboard<layouts::No105Key, ScancodeSet1>> =
             Mutex::new(Keyboard::new(ScancodeSet1::new(),
-                layouts::Us104Key, HandleControl::Ignore)
+                layouts::No105Key, HandleControl::Ignore)
             );
     }
 
