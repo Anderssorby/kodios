@@ -8,6 +8,8 @@
 pub mod serial;
 pub mod vga_buffer;
 pub mod interrupts;
+pub mod gdt;
+
 
 use vga_buffer::{WRITER,ColorCode, Color};
 use core::panic::PanicInfo;
@@ -20,6 +22,7 @@ use core::cmp::Eq;
 
 pub fn init() {
     serial_println!("Initializing...");
+    gdt::init();
     interrupts::init_idt();
     print_logo();
     serial_println!("Initialization complete.");
