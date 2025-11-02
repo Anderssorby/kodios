@@ -3,9 +3,11 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![feature(abi_x86_interrupt)]
 
 pub mod serial;
 pub mod vga_buffer;
+pub mod interrupts;
 
 use vga_buffer::{WRITER,ColorCode, Color};
 use core::panic::PanicInfo;
@@ -16,6 +18,12 @@ use core::marker::Copy;
 use core::cmp::PartialEq;
 use core::cmp::Eq;
 
+pub fn init() {
+    serial_println!("Initializing...");
+    interrupts::init_idt();
+    print_logo();
+    serial_println!("Initialization complete.");
+}
 pub trait Testable {
     fn run(&self) -> ();
 }
@@ -69,6 +77,7 @@ pub fn print_logo() {
     writer.color_code = ColorCode::new(Color::Green, Color::Black);
     writer.write_str(LOGO).unwrap();
     writer.color_code = old_color;
+    serial_println!("{}", LOGO);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
