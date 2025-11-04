@@ -3,11 +3,9 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
-use kodios::serial_print;
+use kodios::{QemuExitCode, exit_qemu, serial_print, serial_println};
 use lazy_static::lazy_static;
-use x86_64::structures::idt::InterruptDescriptorTable;
-use kodios::{exit_qemu, QemuExitCode, serial_println};
-use x86_64::structures::idt::InterruptStackFrame;
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 extern "x86-interrupt" fn test_double_fault_handler(
     _stack_frame: InterruptStackFrame,
@@ -30,7 +28,6 @@ lazy_static! {
         idt
     };
 }
-
 
 pub fn init_test_idt() {
     TEST_IDT.load();

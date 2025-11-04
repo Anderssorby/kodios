@@ -2,7 +2,7 @@
 #![no_main]
 
 use core::panic::PanicInfo;
-use kodios::{QemuExitCode, exit_qemu, serial_println, serial_print};
+use kodios::{QemuExitCode, exit_qemu, serial_print, serial_println};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {

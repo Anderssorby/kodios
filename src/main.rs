@@ -6,11 +6,10 @@
 
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
-use kodios::{hlt_loop, memory::translate_addr, serial_println};
-use x86_64::VirtAddr;
-use x86_64::structures::paging::PageTable;
 #[cfg(not(test))]
 use kodios::println;
+use kodios::{hlt_loop, memory::translate_addr, serial_println};
+use x86_64::{VirtAddr, structures::paging::PageTable};
 
 #[cfg(test)]
 #[panic_handler]

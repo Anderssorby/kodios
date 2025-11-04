@@ -5,23 +5,23 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
+pub mod gdt;
+pub mod interrupts;
+pub mod memory;
 pub mod serial;
 pub mod vga_buffer;
-pub mod interrupts;
-pub mod gdt;
-pub mod memory;
 
-
-use vga_buffer::{WRITER,ColorCode, Color};
-use core::panic::PanicInfo;
-use core::prelude::rust_2024::derive;
-use core::fmt::Debug;
-use core::clone::Clone;
-use core::marker::Copy;
-use core::cmp::PartialEq;
-use core::cmp::Eq;
 #[cfg(test)]
-use bootloader::{entry_point, BootInfo};
+use bootloader::{BootInfo, entry_point};
+use core::{
+    clone::Clone,
+    cmp::{Eq, PartialEq},
+    fmt::Debug,
+    marker::Copy,
+    panic::PanicInfo,
+    prelude::rust_2024::derive,
+};
+use vga_buffer::{Color, ColorCode, WRITER};
 
 #[cfg(test)]
 entry_point!(test_kernel_main);

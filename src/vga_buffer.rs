@@ -1,9 +1,10 @@
-use core::clone::Clone;
-use core::cmp::Eq;
-use core::cmp::PartialEq;
-use core::fmt::{self, Debug, Write};
-use core::marker::Copy;
-use core::prelude::rust_2024::derive;
+use core::{
+    clone::Clone,
+    cmp::{Eq, PartialEq},
+    fmt::{self, Debug, Write},
+    marker::Copy,
+    prelude::rust_2024::derive,
+};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
