@@ -5,7 +5,7 @@
 #![test_runner(kodios::test_runner)]
 
 extern crate alloc;
-use alloc::boxed::Box;
+use alloc::{boxed::Box, rc::Rc, vec::Vec, vec};
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
 #[cfg(not(test))]
@@ -42,6 +42,19 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let x = Box::new(41);
     serial_println!("heap value at {:p}", x);
+
+    let mut vec = Vec::new();
+    for i in 0..500 {
+        vec.push(i);
+    }
+    serial_println!("vec at {:p}", vec.as_slice());
+
+    // create a reference counted vector -> will be freed when count reaches 0
+    let reference_counted = Rc::new(vec![1, 2, 3]);
+    let cloned_reference = reference_counted.clone();
+    serial_println!("current reference count is {}", Rc::strong_count(&cloned_reference));
+    core::mem::drop(reference_counted);
+    serial_println!("reference count is {} now", Rc::strong_count(&cloned_reference));
 
     #[cfg(test)]
     test_main();
