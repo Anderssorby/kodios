@@ -1,5 +1,14 @@
+#[cfg(feature = "bump_allocator")]
 pub mod bump;
+#[cfg(feature = "fsb_allocator")]
+pub mod fixed_size_block;
 #[cfg(feature = "linked_list_allocator")]
+pub mod linked_list;
+#[cfg(feature = "bump_allocator")]
+use bump::BumpAllocator;
+#[cfg(feature = "linked_list_allocator")]
+use linked_list::LinkedListAllocator;
+#[cfg(feature = "ext_linked_list_allocator")]
 use linked_list_allocator::LockedHeap;
 use x86_64::{
     VirtAddr,
@@ -7,8 +16,6 @@ use x86_64::{
         FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB, mapper::MapToError,
     },
 };
-
-use bump::BumpAllocator;
 
 /// A wrapper around spin::Mutex to permit trait implementations.
 pub struct Locked<A> {
@@ -22,12 +29,13 @@ impl<A> Locked<A> {
         }
     }
 
-    pub fn lock(&self) -> spin::MutexGuard<A> {
+    pub fn lock(&'_ self) -> spin::MutexGuard<'_, A> {
         self.inner.lock()
     }
 }
 
 /// Align the given address `addr` upwards to alignment `align`.
+#[cfg(feature = "linked_list_allocator")]
 fn align_up(addr: usize, align: usize) -> usize {
     (addr + align - 1) & !(align - 1)
 }
@@ -61,12 +69,20 @@ pub fn init_heap(
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
+#[cfg(feature = "fsb_allocator")]
+use fixed_size_block::FixedSizeBlockAllocator;
+#[cfg(feature = "fsb_allocator")]
+#[global_allocator]
+static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
 #[cfg(feature = "linked_list_allocator")]
 #[global_allocator]
+static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator::new());
+
+#[cfg(feature = "ext_linked_list_allocator")]
+#[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-
-
+#[cfg(feature = "bump_allocator")]
 #[global_allocator]
 static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
