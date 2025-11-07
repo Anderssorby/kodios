@@ -7,6 +7,7 @@ authors = ["Anders C. Sørby <anders@sorby.xyz>"]
 [dependencies]
 # bootloader = "0.11.12"
 bootloader = { version = "0.9", features = ["map_physical_memory"] }
+linked_list_allocator = "0.9.0"
 spin = "0.10.0"
 volatile = "0.2.6"
 uart_16550 = "0.2.0"
