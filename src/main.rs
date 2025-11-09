@@ -5,13 +5,15 @@
 #![test_runner(kodios::test_runner)]
 
 extern crate alloc;
-use alloc::{boxed::Box, rc::Rc, vec::Vec, vec};
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
 #[cfg(not(test))]
 use kodios::println;
 use kodios::{
-    allocator, hlt_loop, memory::{self, BootInfoFrameAllocator}, serial_println, task::{Task, simple_executor::SimpleExecutor}
+    allocator,
+    memory::{self, BootInfoFrameAllocator},
+    serial_println,
+    task::{Task, executor::Executor, keyboard},
 };
 use x86_64::VirtAddr;
 
@@ -24,6 +26,7 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    use kodios::hlt_loop;
     println!("{}", info);
     hlt_loop();
 }
@@ -46,15 +49,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
 
-    allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
-    let mut executor = SimpleExecutor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.run();
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     #[cfg(test)]
     test_main();
 
-    hlt_loop();
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
 }
