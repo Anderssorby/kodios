@@ -11,7 +11,7 @@ use core::panic::PanicInfo;
 #[cfg(not(test))]
 use kodios::println;
 use kodios::{
-    allocator, hlt_loop, memory::{self, BootInfoFrameAllocator}, serial_println
+    allocator, hlt_loop, memory::{self, BootInfoFrameAllocator}, serial_println, task::{Task, simple_executor::SimpleExecutor}
 };
 use x86_64::VirtAddr;
 
@@ -28,6 +28,15 @@ fn panic(info: &PanicInfo) -> ! {
     hlt_loop();
 }
 
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    serial_println!("async number: {}", number);
+}
+
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -40,21 +49,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
-    let x = Box::new(41);
-    serial_println!("heap value at {:p}", x);
-
-    let mut vec = Vec::new();
-    for i in 0..500 {
-        vec.push(i);
-    }
-    serial_println!("vec at {:p}", vec.as_slice());
-
-    // create a reference counted vector -> will be freed when count reaches 0
-    let reference_counted = Rc::new(vec![1, 2, 3]);
-    let cloned_reference = reference_counted.clone();
-    serial_println!("current reference count is {}", Rc::strong_count(&cloned_reference));
-    core::mem::drop(reference_counted);
-    serial_println!("reference count is {} now", Rc::strong_count(&cloned_reference));
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.run();
 
     #[cfg(test)]
     test_main();

@@ -15,7 +15,7 @@ pic8259 = "0.11.0"
 pc-keyboard = "0.8.0"
 
 [features]
-default = ["fsb_allocator"]
+default = ["ext_linked_list_allocator"]
 fsb_allocator = ["dep:linked_list_allocator"]
 linked_list_allocator = []
 ext_linked_list_allocator = ["dep:linked_list_allocator"]

@@ -69,6 +69,7 @@ pub fn init_heap(
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
+
 #[cfg(feature = "fsb_allocator")]
 use fixed_size_block::FixedSizeBlockAllocator;
 #[cfg(feature = "fsb_allocator")]
